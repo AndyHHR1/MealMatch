@@ -3,8 +3,24 @@ import json
 import re
 from app.models import Recipe
 
+import unicodedata
+
 def _normalize(ingredient: str) -> str:
-    return re.sub(r"[^a-z0-9áéíóúñü\s]", "", ingredient.strip().lower()).strip()
+    # Remover acentos primero
+    normalized = unicodedata.normalize('NFD', ingredient.strip().lower())
+    normalized = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+    # Remover caracteres especiales
+    normalized = re.sub(r"[^a-z0-9\s]", "", normalized)
+    return normalized.strip()
+
+def _ingredients_match(user_ing: str, recipe_ing: str) -> bool:
+    """Determina si un ingrediente del usuario coincide con uno de la receta."""
+    if user_ing == recipe_ing:
+        return True
+    # Substring match
+    if user_ing in recipe_ing or recipe_ing in user_ing:
+        return True
+    return False
 
 class RecipeService:
     def __init__(self, db_session):
@@ -25,11 +41,17 @@ class RecipeService:
             recipe_ings = json.loads(recipe.ingredients)
             recipe_set = set(_normalize(i) for i in recipe_ings)
 
-            matched_set = user_set & recipe_set
-            missing_set = recipe_set - user_set
+            matched_user_ings = set()
+            matched_recipe_ings = set()
+            for user_ing in user_set:
+                for rec_ing in recipe_set:
+                    if _ingredients_match(user_ing, rec_ing):
+                        matched_user_ings.add(user_ing)
+                        matched_recipe_ings.add(rec_ing)
+                        break
 
-            matched_count = len(matched_set)
-            missing_count = len(missing_set)
+            matched_count = len(matched_user_ings)
+            missing_count = len(recipe_set) - len(matched_recipe_ings)
             recipe_total = len(recipe_set)
             user_total = len(user_set)
 
@@ -40,13 +62,14 @@ class RecipeService:
             match_ratio = matched_count / user_total
             missing_ratio = missing_count / recipe_total
 
-            if coverage == 1.0:
-                final_score = 100.0
-            else:
-                final_score = (coverage * 100) - (missing_ratio * 30)
+            min_matches = max(2, user_total // 2)
+            if matched_count < min_matches:
+                continue
 
-            matched_list = sorted(matched_set)
-            missing_list = sorted(missing_set)
+            final_score = coverage * 100 * match_ratio
+
+            matched_list = sorted(matched_user_ings)
+            missing_list = sorted(recipe_set - matched_recipe_ings)
             recipe_ings_normalized = sorted(recipe_set)
 
             scored.append({
