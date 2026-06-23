@@ -20,3 +20,4 @@ class Recipe(Base):
     is_local = Column(Boolean, default=True)
     nutritional_info = Column(Text)  # JSON string dict
     servings = Column(Integer, default=1)
+    source_dataset = Column(String(100))
