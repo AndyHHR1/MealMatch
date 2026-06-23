@@ -26,8 +26,7 @@ MealMatch/
 │   │   │   └── recipes.py             # Endpoints
 │   │   └── services/
 │   │       ├── recipe_service.py      # Lógica de matching
-│   │       ├── foodcom_service.py     # Ingesta Food.com
-│   │       └── scraper_service.py     # Web scraping
+│   │       └── ingestion_service.py    # Carga de recetas JSON
 │   ├── data/
 │   │   ├── recipes.csv                # Food.com dataset (672MB)
 │   │   ├── 1_Recipe_csv.csv           # Archive dataset
@@ -85,8 +84,7 @@ Fuentes utilizadas:
 
 1. **Food.com Recipes** (Kaggle) - 522,517 recetas, 13,235 peruanas detectadas
 2. **Archive Dataset** - 62,126 recetas, 33 peruanas detectadas
-3. **OpenFoodFacts** - Productos de supermercado peruanos
-4. **Recetas Tradicionales** - 11 recetas peruanas auténticas (JSON local)
+3. **Recetas Tradicionales** - 11 recetas peruanas auténticas (JSON local)
 
 Total: **13,279 recetas** en la base de datos.
 
