@@ -8,11 +8,9 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models import Recipe
 
-# Si querés usar SOLO OpenFoodFacts, ejecutá: python3 seed.py --openfoodfacts
 # Si querés las recetas de ejemplo clasicas, ejecutá: python3 seed.py --seed
 # Por defecto, carga AMBAS
 
-USE_OPENFOODFACTS = "--openfoodfacts" in sys.argv or "--only" not in sys.argv
 USE_SEED = "--seed" in sys.argv or "--only" not in sys.argv
 
 SAMPLE_RECIPES = [
@@ -154,7 +152,7 @@ SAMPLE_RECIPES = [
 ]
 
 def seed_database():
-    from app.services.ingestion_service import load_peruvian_recipes_json, ingest_openfoodfacts_peru
+    from app.services.ingestion_service import load_peruvian_recipes_json
     
     db: Session = SessionLocal()
     try:
@@ -171,11 +169,6 @@ def seed_database():
                     print("⚠️  No se pudieron cargar recetas peruanas del JSON.")
             else:
                 print(f"⚠️  La base ya tiene {existing_count} recetas. Seed omitido.")
-        
-        if USE_OPENFOODFACTS:
-            print("\n🌐 Iniciando ingesta desde OpenFoodFacts Perú...")
-            result = ingest_openfoodfacts_peru(db, max_pages=5, page_size=20)
-            print(f"✅ OpenFoodFacts: {result['inserted']} nuevos, {result['skipped']} omitidos.")
         
         total = db.query(Recipe).count()
         print(f"\n📊 Total recetas en BD: {total}")
