@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Body, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.recipe_service import RecipeService
-from typing import List
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
