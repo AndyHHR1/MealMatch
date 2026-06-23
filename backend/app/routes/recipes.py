@@ -28,14 +28,6 @@ def match_recipes(
         }
     }
 
-@router.get("/{recipe_id}")
-def get_recipe_detail(recipe_id: int, db: Session = Depends(get_db)):
-    service = RecipeService(db)
-    recipe = service.get_recipe_by_id(recipe_id)
-    if not recipe:
-        return {"error": "Receta no encontrada"}, 404
-    return recipe
-
 @router.get("/search/{query}")
 def search_recipes(
     query: str,
@@ -45,3 +37,11 @@ def search_recipes(
     service = RecipeService(db)
     results = service.search_recipes(query, limit=limit)
     return {"results": results, "count": len(results)}
+
+@router.get("/{recipe_id}")
+def get_recipe_detail(recipe_id: int, db: Session = Depends(get_db)):
+    service = RecipeService(db)
+    recipe = service.get_recipe_by_id(recipe_id)
+    if not recipe:
+        return {"error": "Receta no encontrada"}, 404
+    return recipe
