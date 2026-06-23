@@ -1,49 +1,76 @@
 from typing import List, Dict, Any
 import json
+import re
 from app.models import Recipe
+
+def _normalize(ingredient: str) -> str:
+    return re.sub(r"[^a-z0-9áéíóúñü\s]", "", ingredient.strip().lower()).strip()
 
 class RecipeService:
     def __init__(self, db_session):
         self.db = db_session
 
     def match_recipes_by_ingredients(self, ingredients: List[str], limit: int = 10) -> List[Dict[str, Any]]:
-        user_ingredients_lower = [ing.strip().lower() for ing in ingredients if ing.strip()]
+        if not ingredients:
+            return []
 
-        query = self.db.query(Recipe).all()
-        results = []
+        user_set = set(_normalize(i) for i in ingredients if i.strip())
+        if not user_set:
+            return []
 
-        for recipe in query:
-            recipe_ingredients = json.loads(recipe.ingredients)
-            recipe_ingredients_lower = [ing.lower() for ing in recipe_ingredients]
+        recipes = self.db.query(Recipe).all()
+        scored: List[Dict[str, Any]] = []
 
-            matched = []
-            for user_ing in user_ingredients_lower:
-                for rec_ing in recipe_ingredients_lower:
-                    if user_ing in rec_ing or rec_ing in user_ing:
-                        matched.append(rec_ing)
-                        break
+        for recipe in recipes:
+            recipe_ings = json.loads(recipe.ingredients)
+            recipe_set = set(_normalize(i) for i in recipe_ings)
 
-            match_score = len(matched) / len(recipe_ingredients_lower) if recipe_ingredients_lower else 0
+            matched_set = user_set & recipe_set
+            missing_set = recipe_set - user_set
 
-            if match_score > 0 or len(user_ingredients_lower) == 0:
-                results.append({
-                    "id": recipe.id,
-                    "name": recipe.name,
-                    "description": recipe.description,
-                    "ingredients": recipe_ingredients,
-                    "prep_time_minutes": recipe.prep_time_minutes,
-                    "difficulty": recipe.difficulty,
-                    "region": recipe.region,
-                    "match_score": round(match_score * 100, 1),
-                    "matched_ingredients": matched,
-                    "image_url": recipe.image_url,
-                    "tags": json.loads(recipe.tags) if recipe.tags else [],
-                    "nutritional_info": json.loads(recipe.nutritional_info) if recipe.nutritional_info else {},
-                    "servings": recipe.servings,
-                })
+            matched_count = len(matched_set)
+            missing_count = len(missing_set)
+            recipe_total = len(recipe_set)
+            user_total = len(user_set)
 
-        results.sort(key=lambda x: x["match_score"], reverse=True)
-        return results[:limit]
+            if recipe_total == 0 or user_total == 0:
+                continue
+
+            coverage = matched_count / recipe_total
+            match_ratio = matched_count / user_total
+            missing_ratio = missing_count / recipe_total
+
+            if coverage == 1.0:
+                final_score = 100.0
+            else:
+                final_score = (coverage * 100) - (missing_ratio * 30)
+
+            matched_list = sorted(matched_set)
+            missing_list = sorted(missing_set)
+            recipe_ings_normalized = sorted(recipe_set)
+
+            scored.append({
+                "id": recipe.id,
+                "name": recipe.name,
+                "description": recipe.description,
+                "ingredients": recipe_ings,
+                "prep_time_minutes": recipe.prep_time_minutes,
+                "difficulty": recipe.difficulty,
+                "region": recipe.region,
+                "match_score": round(final_score, 1),
+                "coverage": round(coverage * 100, 1),
+                "matched_count": matched_count,
+                "missing_count": missing_count,
+                "matched_ingredients": matched_list,
+                "missing_ingredients": missing_list,
+                "image_url": recipe.image_url,
+                "tags": json.loads(recipe.tags) if recipe.tags else [],
+                "nutritional_info": json.loads(recipe.nutritional_info) if recipe.nutritional_info else {},
+                "servings": recipe.servings,
+            })
+
+        scored.sort(key=lambda x: (x["match_score"], x["coverage"]), reverse=True)
+        return scored[:limit]
 
     def get_recipe_by_id(self, recipe_id: int) -> Dict[str, Any] | None:
         recipe = self.db.query(Recipe).filter(Recipe.id == recipe_id).first()

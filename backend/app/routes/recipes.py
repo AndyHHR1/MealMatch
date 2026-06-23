@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Body
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.recipe_service import RecipeService
@@ -8,13 +8,25 @@ router = APIRouter(prefix="/recipes", tags=["recipes"])
 
 @router.post("/match")
 def match_recipes(
-    ingredients: List[str] = Query(..., description="Lista de ingredientes separados por coma"),
-    limit: int = Query(default=10, ge=1, le=50),
+    payload: dict = Body(..., example={"ingredients": ["pollo", "papa", "cebolla"], "limit": 10}),
     db: Session = Depends(get_db)
 ):
+    ingredients = payload.get("ingredients", [])
+    limit = payload.get("limit", 10)
+    if not isinstance(ingredients, list) or len(ingredients) == 0:
+        return {"results": [], "count": 0, "message": "Debe enviar un array de ingredientes."}
+    if not isinstance(limit, int) or limit < 1 or limit > 50:
+        limit = 10
     service = RecipeService(db)
     results = service.match_recipes_by_ingredients(ingredients, limit=limit)
-    return {"results": results, "count": len(results)}
+    return {
+        "results": results,
+        "count": len(results),
+        "meta": {
+            "user_ingredients": ingredients,
+            "limit": limit
+        }
+    }
 
 @router.get("/{recipe_id}")
 def get_recipe_detail(recipe_id: int, db: Session = Depends(get_db)):
