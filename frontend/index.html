@@ -114,6 +114,7 @@
             recipe_matched: null,
             time_to_match: 0
         };
+        let lastSearchResults = [];
 
         async function searchRecipes() {
             const input = document.getElementById('ingredients');
@@ -160,9 +161,11 @@
                         </div>
                     `;
                     lastSearchMeta = { ingredient_count: ingredients.length, recipe_matched: null, time_to_match: timeToMatch };
+                    lastSearchResults = [];
                     return;
                 }
 
+                lastSearchResults = data.results;
                 lastSearchMeta = {
                     ingredient_count: ingredients.length,
                     recipe_matched: data.results[0].name,
@@ -248,6 +251,8 @@
                 const response = await fetch(`${API_URL}/recipes/${recipeId}`);
                 const recipe = await response.json();
                 
+                const searchData = lastSearchResults.find(r => r.id === recipeId);
+                
                 document.getElementById('modalTitle').textContent = recipe.name;
                 document.getElementById('modalContent').innerHTML = `
                     <img src="${recipe.image_url}" alt="${recipe.name}" class="w-full h-48 object-cover rounded-lg mb-4" onerror="this.src='https://placehold.co/600x400?text=Receta'">
@@ -263,16 +268,22 @@
 
                     <div class="mb-4">
                         <h4 class="font-semibold text-gray-900 mb-2">Ingredientes</h4>
-                        <p class="text-sm text-gray-500 mb-1">Tienes <span class="font-semibold text-green-700">${recipe.matched_count}</span> de <span class="font-semibold">${recipe.matched_count + recipe.missing_count}</span></p>
-                        <div class="flex flex-wrap gap-1 mb-2">
-                            ${recipe.matched_ingredients.map(ing => `<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">${ing}</span>`).join('')}
-                        </div>
-                        ${recipe.missing_ingredients.length > 0 ? `
-                            <p class="text-sm text-red-500 mb-1">Te faltan <span class="font-semibold">${recipe.missing_count}</span>:</p>
-                            <div class="flex flex-wrap gap-1">
-                                ${recipe.missing_ingredients.map(ing => `<span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded">${ing}</span>`).join('')}
+                        ${searchData ? `
+                            <p class="text-sm text-gray-500 mb-1">Tienes <span class="font-semibold text-green-700">${searchData.matched_count}</span> de <span class="font-semibold">${searchData.matched_count + searchData.missing_count}</span></p>
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                ${searchData.matched_ingredients.map(ing => `<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">${ing}</span>`).join('')}
                             </div>
-                        ` : ''}
+                            ${searchData.missing_ingredients.length > 0 ? `
+                                <p class="text-sm text-red-500 mb-1">Te faltan <span class="font-semibold">${searchData.missing_count}</span>:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${searchData.missing_ingredients.map(ing => `<span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded">${ing}</span>`).join('')}
+                                </div>
+                            ` : '<p class="text-sm text-green-600 font-semibold">Tienes todos los ingredientes</p>'}
+                        ` : `
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                            </ul>
+                        `}
                     </div>
 
                     <div class="mb-4">
