@@ -9,10 +9,15 @@ venv/
 .venv
 env/
 
-# Base de datos
+# Database
 *.db
 *.sqlite
 *.sqlite3
+
+# Data files (large, managed separately)
+backend/data/*.csv
+backend/data/*.zip
+backend/data/*.json
 
 # IDE
 .vscode/
