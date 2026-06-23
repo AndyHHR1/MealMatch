@@ -6,6 +6,20 @@ from typing import List
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
+@router.get("/ingredients")
+def get_all_ingredients(db: Session = Depends(get_db)):
+    from app.services.recipe_service import RecipeService
+    service = RecipeService(db)
+    ingredients = service.get_all_unique_ingredients()
+    return {"ingredients": sorted(ingredients)}
+
+@router.get("/ingredients/categorized")
+def get_ingredients_categorized():
+    from app.main import CATEGORIZED_INGREDIENTS_CACHE
+    if CATEGORIZED_INGREDIENTS_CACHE is None:
+        return {"categories": {}}
+    return {"categories": CATEGORIZED_INGREDIENTS_CACHE}
+
 @router.get("/search/{query}")
 def search_recipes(
     query: str,
