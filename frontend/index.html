@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MealMatch Perú - Recetas con lo que tienes</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mixpanel-browser@2.37.0/dist/mixpanel.browser.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -97,6 +98,23 @@
     <script>
         const API_URL = 'http://localhost:8000';
 
+        const MIXPANEL_TOKEN = 'YOUR_MIXPANEL_TOKEN';
+        if (typeof mixpanel !== 'undefined' && MIXPANEL_TOKEN !== 'YOUR_MIXPANEL_TOKEN') {
+            mixpanel.init(MIXPANEL_TOKEN, { track_pageview: false, persistence: 'localStorage' });
+        }
+
+        const USER_ID = localStorage.getItem('mealmatch_user_id') || (() => {
+            const id = 'usr_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+            localStorage.setItem('mealmatch_user_id', id);
+            return id;
+        })();
+
+        let lastSearchMeta = {
+            ingredient_count: 0,
+            recipe_matched: null,
+            time_to_match: 0
+        };
+
         async function searchRecipes() {
             const input = document.getElementById('ingredients');
             const resultsDiv = document.getElementById('results');
@@ -115,6 +133,8 @@
             errorDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
 
+            const startTime = performance.now();
+
             try {
                 const response = await fetch(`${API_URL}/recipes/match`, {
                     method: 'POST',
@@ -124,6 +144,8 @@
                     body: JSON.stringify({ ingredients, limit: 10 }),
                 });
                 const data = await response.json();
+                const endTime = performance.now();
+                const timeToMatch = Math.round(endTime - startTime);
 
                 loadingDiv.classList.add('hidden');
 
@@ -137,13 +159,20 @@
                             <p class="mt-1 text-sm text-gray-500">Intenta con otros ingredientes.</p>
                         </div>
                     `;
+                    lastSearchMeta = { ingredient_count: ingredients.length, recipe_matched: null, time_to_match: timeToMatch };
                     return;
                 }
+
+                lastSearchMeta = {
+                    ingredient_count: ingredients.length,
+                    recipe_matched: data.results[0].name,
+                    time_to_match: timeToMatch
+                };
 
                 data.results.forEach(recipe => {
                     const card = document.createElement('div');
                     card.className = 'bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer';
-                    card.onclick = () => showRecipeDetail(recipe.id);
+                    card.onclick = () => showRecipeDetail(recipe.id, recipe.name);
 
                     const matchColor = recipe.match_score >= 70 ? 'text-green-600 bg-green-50' : recipe.match_score >= 40 ? 'text-yellow-600 bg-yellow-50' : 'text-gray-600 bg-gray-50';
                     const matchText = recipe.match_score >= 70 ? 'Excelente coincidencia' : recipe.match_score >= 40 ? 'Coincidencia media' : 'Coincidencia baja';
@@ -205,7 +234,16 @@
             }
         }
 
-        async function showRecipeDetail(recipeId) {
+        async function showRecipeDetail(recipeId, recipeName) {
+            if (lastSearchMeta.ingredient_count >= 3 && typeof mixpanel !== 'undefined') {
+                mixpanel.track('recipe_steps_viewed', {
+                    user_id: USER_ID,
+                    ingredient_count: lastSearchMeta.ingredient_count,
+                    recipe_matched: recipeName || lastSearchMeta.recipe_matched,
+                    time_to_match: lastSearchMeta.time_to_match
+                });
+            }
+
             try {
                 const response = await fetch(`${API_URL}/recipes/${recipeId}`);
                 const recipe = await response.json();
