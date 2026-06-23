@@ -8,6 +8,13 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models import Recipe
 
+# Si querés usar SOLO OpenFoodFacts, ejecutá: python3 seed.py --openfoodfacts
+# Si querés las recetas de ejemplo clasicas, ejecutá: python3 seed.py --seed
+# Por defecto, carga AMBAS
+
+USE_OPENFOODFACTS = "--openfoodfacts" in sys.argv or "--only" not in sys.argv
+USE_SEED = "--seed" in sys.argv or "--only" not in sys.argv
+
 SAMPLE_RECIPES = [
     {
         "name": "Seco de Pollo",
@@ -55,21 +62,6 @@ SAMPLE_RECIPES = [
         "source_dataset": "seed",
     },
     {
-        "name": "Causa Limeña",
-        "description": "Pastel de papa amarilla relleno de pollo o atún.",
-        "ingredients": json.dumps(["papa", "aji amarillo", "limon", "pollo", "mayonesa", "palta", "huevo"]),
-        "steps": json.dumps(["Hacer puré de papa.", "Preparar el relleno.", "Intercalar capas y decorar con palta."]),
-        "prep_time_minutes": 45,
-        "difficulty": "Media",
-        "region": "Costa",
-        "image_url": "https://placehold.co/600x400?text=Causa+Limenya",
-        "tags": json.dumps(["papa", "entrada", "frio"]),
-        "nutritional_info": json.dumps({"calories": 420, "protein": 20, "carbs": 45, "fat": 20}),
-        "servings": 6,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
         "name": "Papa a la Huancaina",
         "description": "Papas hervidas bañadas en salsa de aji amarillo y queso.",
         "ingredients": json.dumps(["papa", "aji amarillo", "queso", "leche", "galleta", "cebolla", "aceite", "sal"]),
@@ -100,36 +92,6 @@ SAMPLE_RECIPES = [
         "source_dataset": "seed",
     },
     {
-        "name": "Tallarines a la Huancaina",
-        "description": "Pasta con salsa de aji amarillo y huevo.",
-        "ingredients": json.dumps(["tallarines", "aji amarillo", "queso", "leche", "huevo", "aceite"]),
-        "steps": json.dumps(["Hervir los tallarines.", "Licuar la salsa.", "Mezclar y servir con huevo."]),
-        "prep_time_minutes": 25,
-        "difficulty": "Fácil",
-        "region": "Nacional",
-        "image_url": "https://placehold.co/600x400?text=Tallarines+a+la+Huancaina",
-        "tags": json.dumps(["pasta", "salsa", "rapido"]),
-        "nutritional_info": json.dumps({"calories": 480, "protein": 18, "carbs": 55, "fat": 22}),
-        "servings": 2,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
-        "name": "Pollo a la Brasa",
-        "description": "Pollo entero cocido en horno a brasa con especias.",
-        "ingredients": json.dumps(["pollo", "sal", "pimienta", "comino", "ajo", "vinagre", "papas", "ensalada"]),
-        "steps": json.dumps(["Marinar el pollo.", "Hornear a alta temperatura.", "Servir con papas y ensalada."]),
-        "prep_time_minutes": 90,
-        "difficulty": "Media",
-        "region": "Nacional",
-        "image_url": "https://placehold.co/600x400?text=Pollo+a+la+Brasa",
-        "tags": json.dumps(["pollo", "horno", "domingo"]),
-        "nutritional_info": json.dumps({"calories": 720, "protein": 48, "carbs": 30, "fat": 40}),
-        "servings": 4,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
         "name": "Ceviche",
         "description": "Pescado fresco marinado en limón con cebolla y ají.",
         "ingredients": json.dumps(["pescado", "limon", "cebolla", "aji limo", "cilantro", "sal", "camote", "choclo"]),
@@ -141,36 +103,6 @@ SAMPLE_RECIPES = [
         "tags": json.dumps(["pescado", "mar", "frio"]),
         "nutritional_info": json.dumps({"calories": 280, "protein": 32, "carbs": 20, "fat": 10}),
         "servings": 2,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
-        "name": "Salchipapas",
-        "description": "Papas fritas con salchicha y salsas.",
-        "ingredients": json.dumps(["papa", "salchicha", "salsas", "aceite"]),
-        "steps": json.dumps(["Freir las papas.", "Calentar las salchichas.", "Servir con salsas."]),
-        "prep_time_minutes": 15,
-        "difficulty": "Fácil",
-        "region": "Nacional",
-        "image_url": "https://placehold.co/600x400?text=Salchipapas",
-        "tags": json.dumps(["rapido", "papa", "street food"]),
-        "nutritional_info": json.dumps({"calories": 550, "protein": 14, "carbs": 50, "fat": 32}),
-        "servings": 1,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
-        "name": "Sopa Criolla",
-        "description": "Sopa con fideos, carne, huevo y leche.",
-        "ingredients": json.dumps(["fideos", "carne", "cebolla", "ajo", "tomate", "leche", "huevo", "papa", "comino"]),
-        "steps": json.dumps(["Freir cebolla y ajo.", "Agregar carne y papas.", "Cocinar fideos y huevo."]),
-        "prep_time_minutes": 40,
-        "difficulty": "Fácil",
-        "region": "Nacional",
-        "image_url": "https://placehold.co/600x400?text=Sopa+Criolla",
-        "tags": json.dumps(["sopa", "caliente", "invierno"]),
-        "nutritional_info": json.dumps({"calories": 420, "protein": 22, "carbs": 40, "fat": 18}),
-        "servings": 3,
         "is_local": True,
         "source_dataset": "seed",
     },
@@ -190,76 +122,31 @@ SAMPLE_RECIPES = [
         "source_dataset": "seed",
     },
     {
-        "name": "Carapulcra con Sopa Seca",
-        "description": "Plato de la costa norte con yuca, cerdo y pallares.",
-        "ingredients": json.dumps(["yuca", "cerdo", "pallares", "aji panca", "cebolla", "limon", "culantro"]),
-        "steps": json.dumps(["Sancochar yuca y pallares.", "Freir el cerdo.", "Mezclar y servir con salsa."]),
-        "prep_time_minutes": 80,
-        "difficulty": "Difícil",
-        "region": "Costa",
-        "image_url": "https://placehold.co/600x400?text=Carapulcra",
-        "tags": json.dumps(["tradicional", "yuca", "norte"]),
-        "nutritional_info": json.dumps({"calories": 620, "protein": 25, "carbs": 60, "fat": 28}),
-        "servings": 4,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
-        "name": "Ocopa Arequipa",
-        "description": "Salsa de queso y aji sobre papas sancochadas.",
-        "ingredients": json.dumps(["papa", "queso", "aji mirasol", "leche", "galleta", "cebolla", "aceite"]),
-        "steps": json.dumps(["Hervir papas.", "Licuar salsa de queso.", "Servir bañando las papas."]),
-        "prep_time_minutes": 40,
+        "name": "Pollo a la Brasa",
+        "description": "Pollo entero cocido en horno a brasa con especias.",
+        "ingredients": json.dumps(["pollo", "sal", "pimienta", "comino", "ajo", "vinagre", "papas", "ensalada"]),
+        "steps": json.dumps(["Marinar el pollo.", "Hornear a alta temperatura.", "Servir con papas y ensalada."]),
+        "prep_time_minutes": 90,
         "difficulty": "Media",
-        "region": "Sierra",
-        "image_url": "https://placehold.co/600x400?text=Ocopa",
-        "tags": json.dumps(["queso", "papa", "arequipa"]),
-        "nutritional_info": json.dumps({"calories": 450, "protein": 16, "carbs": 45, "fat": 22}),
-        "servings": 4,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
-        "name": "Juane",
-        "description": "Arroz con pollo envuelto en hojas de bijao.",
-        "ingredients": json.dumps(["arroz", "pollo", "cebolla", "aji", "comino", "hojas de bijao", "limon"]),
-        "steps": json.dumps(["Marinar pollo.", "Mezclar con arroz.", "Envolver en hojas y cocinar."]),
-        "prep_time_minutes": 75,
-        "difficulty": "Difícil",
-        "region": "Selva",
-        "image_url": "https://placehold.co/600x400?text=Juane",
-        "tags": json.dumps(["selva", "arroz", "fiestas"]),
-        "nutritional_info": json.dumps({"calories": 560, "protein": 30, "carbs": 65, "fat": 20}),
-        "servings": 6,
-        "is_local": True,
-        "source_dataset": "seed",
-    },
-    {
-        "name": "Tallarin Saltado",
-        "description": "Fideos salteados con carne, verduras y salsas.",
-        "ingredients": json.dumps(["tallarines", "carne", "cebolla", "tomate", "sillao", "aji panca", "aceite"]),
-        "steps": json.dumps(["Saltear carne y verduras.", "Agregar fideos cocidos.", "Sazonar y servir."]),
-        "prep_time_minutes": 25,
-        "difficulty": "Fácil",
         "region": "Nacional",
-        "image_url": "https://placehold.co/600x400?text=Tallarin+Saltado",
-        "tags": json.dumps(["pasta", "salteado", "rapido"]),
-        "nutritional_info": json.dumps({"calories": 520, "protein": 25, "carbs": 58, "fat": 22}),
-        "servings": 2,
+        "image_url": "https://placehold.co/600x400?text=Pollo+a+la+Brasa",
+        "tags": json.dumps(["pollo", "horno", "domingo"]),
+        "nutritional_info": json.dumps({"calories": 720, "protein": 48, "carbs": 30, "fat": 40}),
+        "servings": 4,
         "is_local": True,
         "source_dataset": "seed",
     },
     {
-        "name": "Humita",
-        "description": "Masa de maíz envuelta en chala con queso.",
-        "ingredients": json.dumps(["maiz", "queso", "cebolla", "aceite", "sal", "hojas de chala"]),
-        "steps": json.dumps(["Rallar maíz.", "Mezclar con queso y cebolla.", "Envolver y hervir."]),
-        "prep_time_minutes": 60,
+        "name": "Causa Limeña",
+        "description": "Pastel de papa amarilla relleno de pollo o atún.",
+        "ingredients": json.dumps(["papa", "aji amarillo", "limon", "pollo", "mayonesa", "palta", "huevo"]),
+        "steps": json.dumps(["Hacer puré de papa.", "Preparar el relleno.", "Intercalar capas y decorar con palta."]),
+        "prep_time_minutes": 45,
         "difficulty": "Media",
-        "region": "Sierra",
-        "image_url": "https://placehold.co/600x400?text=Humita",
-        "tags": json.dumps(["maiz", "queso", "tradicional"]),
-        "nutritional_info": json.dumps({"calories": 320, "protein": 10, "carbs": 45, "fat": 14}),
+        "region": "Costa",
+        "image_url": "https://placehold.co/600x400?text=Causa+Limenya",
+        "tags": json.dumps(["papa", "entrada", "frio"]),
+        "nutritional_info": json.dumps({"calories": 420, "protein": 20, "carbs": 45, "fat": 20}),
         "servings": 6,
         "is_local": True,
         "source_dataset": "seed",
@@ -267,18 +154,34 @@ SAMPLE_RECIPES = [
 ]
 
 def seed_database():
+    from app.services.ingestion_service import load_peruvian_recipes_json, ingest_openfoodfacts_peru
+    
     db: Session = SessionLocal()
     try:
-        if db.query(Recipe).count() == 0:
-            for recipe_data in SAMPLE_RECIPES:
-                recipe = Recipe(**recipe_data)
-                db.add(recipe)
-            db.commit()
-            print(f"Seeded {len(SAMPLE_RECIPES)} recipes.")
-        else:
-            print("Database already has recipes. Skipping seed.")
+        if USE_SEED:
+            existing_count = db.query(Recipe).count()
+            if existing_count == 0:
+                recipes_data = load_peruvian_recipes_json()
+                if recipes_data:
+                    for recipe_data in recipes_data:
+                        db.add(Recipe(**recipe_data))
+                    db.commit()
+                    print(f"✅ Seed: {len(recipes_data)} recetas peruanas tradicionales insertadas.")
+                else:
+                    print("⚠️  No se pudieron cargar recetas peruanas del JSON.")
+            else:
+                print(f"⚠️  La base ya tiene {existing_count} recetas. Seed omitido.")
+        
+        if USE_OPENFOODFACTS:
+            print("\n🌐 Iniciando ingesta desde OpenFoodFacts Perú...")
+            result = ingest_openfoodfacts_peru(db, max_pages=5, page_size=20)
+            print(f"✅ OpenFoodFacts: {result['inserted']} nuevos, {result['skipped']} omitidos.")
+        
+        total = db.query(Recipe).count()
+        print(f"\n📊 Total recetas en BD: {total}")
+        
     except Exception as e:
-        print(f"Error seeding database: {e}")
+        print(f"❌ Error: {e}")
         db.rollback()
     finally:
         db.close()

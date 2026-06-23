@@ -67,6 +67,7 @@ class RecipeService:
                 "tags": json.loads(recipe.tags) if recipe.tags else [],
                 "nutritional_info": json.loads(recipe.nutritional_info) if recipe.nutritional_info else {},
                 "servings": recipe.servings,
+                "source_dataset": recipe.source_dataset,
             })
 
         scored.sort(key=lambda x: (x["match_score"], x["coverage"]), reverse=True)
@@ -90,6 +91,7 @@ class RecipeService:
             "tags": json.loads(recipe.tags) if recipe.tags else [],
             "nutritional_info": json.loads(recipe.nutritional_info) if recipe.nutritional_info else {},
             "servings": recipe.servings,
+            "source_dataset": recipe.source_dataset,
         }
 
     def search_recipes(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
@@ -113,6 +115,7 @@ class RecipeService:
                     "tags": json.loads(recipe.tags) if recipe.tags else [],
                     "nutritional_info": json.loads(recipe.nutritional_info) if recipe.nutritional_info else {},
                     "servings": recipe.servings,
+                    "source_dataset": recipe.source_dataset,
                 })
 
         return results[:limit]
