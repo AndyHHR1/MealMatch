@@ -1,6 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Float, Boolean, JSON
-from sqlalchemy.types import TypeDecorator
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, Text, Boolean
 from app.database import Base
 import json
 
