@@ -1,0 +1,102 @@
+Food Name,Country/Region,Description,Calories,Serving Type,Main Ingredients,Category,Preparation Time,Popularity Rank
+Tacos,Mexico,Corn tortilla filled with meat and vegetables.,250,Hot,"Corn Tortilla, Meat, Vegetables",Snack,20,1
+Shawarma,Lebanon,Middle eastern wrap with meat and vegetables.,400,Cold,"Meat, Vegetables, Flatbread",Main Course,30,2
+Banh Mi,Vietnam,Vietnamese baguette sandwich with pickled vegetables.,450,Cold,"Baguette, Pork, Pickled Vegetables, Herbs",Snack,25,3
+Churros,Spain,Sweet fried dough sticks coated in sugar.,350,Hot,"Flour, Sugar, Cinnamon",Dessert,40,4
+Pani Puri,India,Crispy semolina puffs filled with spicy water.,200,Cold,"Semolina, Potatoes, Spices",Snack,30,5
+Arepas,Colombia,Cornmeal patties filled with meat or cheese.,300,Cold,"Cornmeal, Cheese, Meat",Main Course,25,6
+Gyoza,Japan,Pan-fried dumplings.,250,Hot,"Pork, Cabbage, Soy Sauce",Snack,45,7
+Doner Kebab,Turkey,Grilled meat served in flatbread.,257,Cold,"Meat, Vegetables, Flatbread",Main Course,25,8
+Empanadas,Argentina,Pastry filled with meat or cheese.,350,Cold,"Dough, Meat, Cheese",Snack,50,9
+Pho,Vietnam,Vietnamese noodle soup.,350,Hot,"Rice Noodles, Beef, Herbs",Main Course,90,10
+Pad Thai,Thailand,Thai stir-fried noodles.,550,Hot,"Rice Noodles, Tofu, Eggs, Peanuts",Main Course,30,11
+Jerk Chicken,Jamaica,Grilled chicken marinated with spices.,500,Hot,"Chicken, Spices, Rice",Main Course,60,12
+Falafel,Middle East,Chickpea fritters.,300,Hot,"Chickpeas, Herbs, Spices",Snack,30,13
+Pierogi,Poland,Dumplings filled with potatoes or cheese.,400,Cold,"Potatoes, Cheese, Dough",Main Course,40,14
+Bhel Puri,India,Indian snack with puffed rice and chutneys.,200,Cold,"Puffed Rice, Potatoes, Spices, Chutney",Snack,20,15
+Satay,Indonesia,Skewered and grilled meat.,450,Hot,"Meat, Peanut Sauce, Spices",Main Course,40,16
+Tamales,Mexico,Corn dough wrapped in leaves.,300,Hot,"Corn Dough, Meat, Spices",Snack,90,17
+Samosa,India,Fried or baked pastry filled with potatoes.,250,Cold,"Potatoes, Spices, Pastry",Snack,60,18
+Ceviche,Peru,Seafood marinated in lime juice.,250,Cold,"Seafood, Lime, Onions",Snack,20,19
+Koshari,Egypt,"Egyptian mix of rice, lentils, and pasta.",550,Cold,"Rice, Lentils, Pasta, Tomato Sauce",Main Course,60,20
+Vada Pav,India,Indian burger with spiced potato patty.,300,Cold,"Potato Patty, Bread, Spices",Snack,15,21
+Hot Dogs,United States,Grilled sausage in a bun.,300,Hot,"Sausage, Bun, Condiments",Main Course,15,22
+Corn Dogs,United States,Sausage on a stick coated in batter.,350,Hot,"Sausage, Cornmeal Batter",Snack,20,23
+Takoyaki,Japan,Fried dough balls with octopus filling.,400,Hot,"Octopus, Batter, Bonito Flakes",Snack,30,24
+Baklava,Turkey,Sweet layered pastry with nuts.,500,Cold,"Phyllo Dough, Nuts, Honey",Dessert,90,25
+Khachapuri,Georgia,Cheese-filled bread.,600,Cold,"Cheese, Dough, Egg",Main Course,40,26
+Okonomiyaki,Japan,Savory pancake with toppings.,500,Cold,"Cabbage, Batter, Egg, Meat, Seafood",Snack,30,27
+Kimchi,Korea,Fermented cabbage dish.,100,Cold,"Cabbage, Chili, Garlic",Main Course,1200,28
+Souvlaki,Greece,Grilled meat skewers.,450,Cold,"Meat, Skewers, Tzatziki",Snack,30,29
+Chimichurri Sandwich,Argentina,Steak sandwich with chimichurri sauce.,500,Cold,"Bread, Steak, Chimichurri Sauce",Main Course,25,30
+Poutine,Canada,Fries topped with cheese curds and gravy.,700,Cold,"Fries, Cheese Curds, Gravy",Main Course,25,31
+Choripn,Argentina,Sausage sandwich.,500,Cold,"Chorizo, Bread, Chimichurri Sauce",Main Course,20,32
+Fried Plantains,Caribbean,Sweet fried bananas.,200,Cold,"Plantains, Oil, Spices",Snack,15,33
+Poffertjes,Netherlands,Mini fluffy pancakes.,300,Hot,"Flour, Sugar, Butter",Dessert,30,34
+Baozi,China,Steamed buns with meat.,400,Cold,"Dough, Meat, Vegetables",Snack,60,35
+Lahmacun,Turkey,Thin crispy flatbread with toppings.,350,Cold,"Flatbread, Minced Meat, Spices",Main Course,20,36
+Fish Tacos,Mexico,Grilled fish in tortillas.,400,Hot,"Fish, Tortilla, Cabbage",Snack,25,37
+Biryani,India,Spiced rice dish.,600,Hot,"Rice, Spices, Meat, Egg, Cottage Cheese, or Vegetables",Main Course,90,38
+Huevos Rancheros,Mexico,Eggs with salsa and tortillas.,400,Cold,"Eggs, Tortilla, Salsa",Snack,25,39
+Cheesesteak,United States,Beef sandwich with cheese.,800,Hot,"Beef, Cheese, Bread",Main Course,30,40
+Sichuan Noodles,China,Spicy noodle soup.,550,Cold,"Noodles, Chili Oil, Pork",Main Course,30,41
+Roti Canai,Malaysia,Flatbread with curry.,600,Cold,"Flatbread, Curry Sauce",Main Course,20,42
+Gimbap,Korea,Seaweed rice rolls.,350,Cold,"Rice, Seaweed, Vegetables",Snack,30,43
+Tamago Sushi,Japan,Egg sushi.,150,Cold,"Egg, Rice, Seaweed",Main Course,20,44
+Baba Ganoush,Middle East,Eggplant dip.,250,Cold,"Eggplant, Tahini, Garlic",Snack,25,45
+Meat Pie,Australia,Meat-filled pastry.,600,Hot,"Pastry, Meat, Gravy",Main Course,45,46
+Murtabak,Malaysia,Stuffed flatbread.,700,Cold,"Flatbread, Meat, Spices",Main Course,40,47
+Bubble Tea,Taiwan,Tea with chewy tapioca balls.,300,Cold,"Tea, Tapioca Pearls, Milk",Drink,15,48
+Crepes,France,Thin pancakes.,400,Hot,"Flour, Eggs, Milk",Dessert,20,49
+Halo Halo,Philippines,Shaved ice dessert.,500,Cold,"Shaved Ice, Sweet Beans, Fruits",Dessert,30,50
+Chimichanga,Mexico,Deep-fried burrito.,700,Cold,"Tortilla, Meat, Beans, Cheese",Main Course,30,51
+Fried Rice,China,Stir-fried rice.,600,Hot,"Rice, Vegetables, Soy Sauce",Main Course,20,52
+Frites,Belgium,Thick-cut fries.,500,Cold,"Potatoes, Oil, Salt",Snack,25,53
+Khinkali,Georgia,Soup dumplings.,400,Cold,"Dough, Meat, Spices",Main Course,40,54
+Mochi,Japan,Sticky rice cakes.,200,Cold,"Rice Flour, Sugar, Filling",Dessert,30,55
+Currywurst,Germany,Grilled sausage with curry sauce.,600,Cold,"Sausage, Curry Sauce, Bread",Main Course,20,56
+Ramen,Japan,Noodle soup.,450,Hot,"Noodles, Broth, Pork, Egg",Main Course,60,57
+Croque Monsieur,France,Grilled ham and cheese sandwich.,700,Hot,"Bread, Ham, Cheese",Main Course,20,58
+Chaat,India,Spiced snack mix.,300,Cold,"Puffed Rice, Potatoes, Spices, Yogurt",Snack,15,59
+Arequipe,Colombia,Sweet caramel spread.,400,Cold,"Milk, Sugar",Dessert,30,60
+Pho Cuon,Vietnam,Fresh spring rolls.,250,Hot,"Rice Paper, Beef, Herbs",Snack,20,61
+Pizza Margherita,Italy,Thin crust pizza with tomatoes.,600,Cold,"Dough, Tomato, Mozzarella",Main Course,30,62
+Tortilla Espaola,Spain,Spanish potato omelette.,400,Cold,"Eggs, Potatoes, Onions",Snack,25,63
+Picarones,Peru,Fried dough with molasses.,500,Hot,"Sweet Potato, Flour, Syrup",Dessert,40,64
+Hoppers,Sri Lanka,Crispy rice crepes.,300,Cold,"Rice Flour, Coconut Milk, Egg",Snack,20,65
+Kare Kare,Philippines,Peanut stew.,700,Cold,"Oxtail, Peanut Sauce, Vegetables",Main Course,90,66
+Kofta,India,Meatball curry.,500,Cold,"Minced Meat, Spices, Sauce",Main Course,40,68
+Adobo,Philippines,Stewed meat with soy sauce.,600,Cold,"Meat, Soy Sauce, Vinegar, Garlic",Main Course,60,69
+Shrimp Po' Boy,United States,Fried shrimp sandwich.,269,Hot,"Shrimp, Bread, Sauce",Main Course,35,70
+Hummus,Middle East,Chickpea dip.,250,Cold,"Chickpeas, Tahini, Garlic",Snack,15,71
+Pavlova,New Zealand,Pavlova cake.,400,Cold,"Egg Whites, Sugar, Fruits",Dessert,60,72
+Raita,India,Yogurt-based side dish.,150,Cold,"Yogurt, Cucumber, Spices",Side Dish,10,73
+Kulfi,India,Indian ice cream.,250,Cold,"Milk, Sugar, Nuts",Dessert,240,74
+Gumbo,United States,Seafood stew.,600,Cold,"Sausage, Seafood, Okra, Rice",Main Course,120,75
+Cassava Cake,Caribbean,Cassava-based dessert.,500,Hot,"Cassava, Coconut Milk, Sugar",Dessert,60,76
+Tarte Tatin,France,Upside-down caramelized apple pie.,600,Cold,"Apples, Sugar, Pastry",Dessert,45,77
+Fish And Chips,United Kingdom,Crispy fried fish with fries.,800,Hot,"Fish, Potatoes, Batter",Main Course,25,78
+Sinigang,Philippines,Sour tamarind soup.,400,Hot,"Pork, Tamarind, Vegetables",Snack,60,79
+Escargot,France,Snails cooked in garlic butter.,300,Cold,"Snails, Garlic Butter",Main Course,30,80
+Tagine,Morocco,Moroccan slow-cooked stew.,600,Cold,"Meat, Vegetables, Spices",Main Course,120,81
+Sate Padang,Indonesia,Spicy skewered meat.,500,Hot,"Meat, Spicy Sauce, Skewers",Main Course,30,82
+Polenta,Italy,Boiled cornmeal dish.,300,Cold,"Cornmeal, Butter, Cheese",Snack,30,83
+Bibimbap,Korea,Mixed rice bowl.,650,Hot,"Rice, Vegetables, Meat",Main Course,40,84
+Pulled Pork Sandwich,United States,Bbq pork sandwich.,700,Hot,"Pork, Bread, BBQ Sauce",Main Course,120,85
+Pesto Pasta,Italy,Basil-flavored pasta.,550,Cold,"Pasta, Basil, Parmesan",Main Course,20,86
+Arancini,Italy,Stuffed rice balls.,500,Cold,"Rice, Cheese, Meat",Snack,45,87
+Bao Buns,China,Steamed buns.,600,Hot,"Dough, Meat, Pickles",Main Course,60,88
+Malpua,India,Sweet fried pancakes.,450,Cold,"Flour, Milk, Sugar, Syrup",Dessert,30,89
+Rasgulla,India,Sweet cheese dessert.,300,Cold,"Cheese, Sugar Syrup",Dessert,60,90
+Biryani Wraps,India,Rice and meat wraps.,650,Hot,"Rice, Meat, Spices, Flatbread",Main Course,45,91
+Tikka Rolls,India,Spiced meat rolls.,500,Hot,"Chicken, Spices, Flatbread",Main Course,30,92
+Shabu Shabu,Japan,Hot pot dish.,600,Cold,"Beef, Vegetables, Broth",Main Course,60,93
+Stuffed Paratha,India,Stuffed flatbread.,600,Hot,"Wheat Flour, Spiced Filling",Main Course,30,94
+Momo,Nepal,Steamed dumplings.,400,Cold,"Dough, Meat, Spices",Snack,40,95
+Onigiri,Japan,Rice balls.,200,Cold,"Rice, Seaweed, Filling",Snack,20,96
+Katsu Curry,Japan,Breaded chicken curry.,800,Hot,"Chicken, Curry Sauce, Rice",Main Course,45,97
+Tteokbokki,Korea,Spicy rice cakes.,550,Hot,"Rice Cakes, Chili Sauce",Main Course,30,98
+Mapo Tofu,China,Tofu in spicy sauce.,600,Hot,"Tofu, Chili Sauce, Minced Meat",Main Course,30,99
+Laksa,Malaysia,Spicy noodle soup.,700,Hot,"Noodles, Coconut Milk, Seafood",Main Course,40,100
+Chili Crab,Singapore,Chili-flavored crab.,800,Hot,"Crab, Chili Sauce, Egg",Main Course,45,101
+Apple Pie,United States,Sweet baked pastry.,500,Hot,"Apples, Sugar, Pastry",Dessert,60,102
