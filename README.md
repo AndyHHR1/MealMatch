@@ -90,8 +90,6 @@ Fuentes utilizadas:
    - https://www.kaggle.com/datasets/prashantsingh001/recipes-dataset-64k-dishes
 2. **Extended Recipes Dataset (Kaggle)** - Dataset extendido
    - https://www.kaggle.com/datasets/wafaaelhusseini/extended-recipes-dataset-64k-dishes
-3. **Seed** - 9 recetas peruanas de ejemplo (código integrado)
-
 Para cargar datos:
 ```bash
 docker exec mealmatch-backend-1 python3 /app/load_archive.py
@@ -112,16 +110,3 @@ Props: `user_id`, `ingredient_count`, `recipe_matched`, `time_to_match`
 | `DATABASE_URL` | URL de base de datos | `sqlite:///./mealmatch.db` |
 | `CORS_ORIGINS` | Orígenes permitidos | `*` |
 | `MIXPANEL_TOKEN` | Token de Mixpanel | vacío |
-
-## Próximos Pasos
-
-- [ ] Migrar a PostgreSQL (AWS RDS)
-- [ ] Autenticación de usuarios (OAuth2 + JWT)
-- [ ] Favoritos y perfil de usuario
-- [ ] Almacenamiento de imágenes en S3 + CDN
-- [ ] Filtros colaborativos / ML para recomendaciones
-- [ ] Compartir recetas en comunidad
-- [ ] Integración con tiendas locales (carrito de compras)
-
-## Licencia
-MIT
