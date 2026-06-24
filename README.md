@@ -25,12 +25,11 @@ MealMatch/
 │   │   ├── routes/
 │   │   │   └── recipes.py             # Endpoints
 │   │   └── services/
-│   │       ├── recipe_service.py      # Lógica de matching
-│   │       └── ingestion_service.py    # Carga de recetas JSON
+│   │       └── recipe_service.py      # Lógica de matching
 │   ├── data/
-│   │   ├── recipes.csv                # Food.com dataset (672MB)
-│   │   ├── 1_Recipe_csv.csv           # Archive dataset
-│   │   └── peruvian_recipes.json      # Recetas tradicionales
+│   │   └── 1_Recipe_csv.csv           # Archive dataset (recetas peruanas)
+│   ├── load_archive.py                # Carga de recetas desde CSV
+│   ├── seed.py                        # Recetas de ejemplo
 │   └── Dockerfile
 ├── frontend/
 │   └── index.html                     # Interfaz de usuario
@@ -64,6 +63,11 @@ docker-compose up --build
 
 La app estará disponible en http://localhost:3000
 
+**Cargar recetas:**
+```bash
+docker exec mealmatch-backend-1 python3 /app/load_archive.py
+```
+
 ## Endpoints
 
 - `GET /` - Bienvenida
@@ -82,11 +86,16 @@ La app estará disponible en http://localhost:3000
 
 Fuentes utilizadas:
 
-1. **Food.com Recipes** (Kaggle) - 522,517 recetas, 13,235 peruanas detectadas
-2. **Archive Dataset** - 62,126 recetas, 33 peruanas detectadas
-3. **Recetas Tradicionales** - 11 recetas peruanas auténticas (JSON local)
+1. **Archive Dataset (Kaggle)** - 62,126 recetas, filtrado por términos peruanos
+   - https://www.kaggle.com/datasets/prashantsingh001/recipes-dataset-64k-dishes
+2. **Extended Recipes Dataset (Kaggle)** - Dataset extendido
+   - https://www.kaggle.com/datasets/wafaaelhusseini/extended-recipes-dataset-64k-dishes
+3. **Seed** - 9 recetas peruanas de ejemplo (código integrado)
 
-Total: **13,279 recetas** en la base de datos.
+Para cargar datos:
+```bash
+docker exec mealmatch-backend-1 python3 /app/load_archive.py
+```
 
 ## Tracking
 
