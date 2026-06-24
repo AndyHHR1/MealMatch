@@ -23,7 +23,7 @@ SAMPLE_RECIPES = [
         "difficulty": "Media",
         "region": "Costa",
         "image_url": "https://placehold.co/600x400?text=Seco+de+Pollo",
-        "tags": json.dumps(["guiso", "cerveza", "almuerzo"]),
+        "tags": json.dumps(["guisto", "cerveza", "almuerzo"]),
         "nutritional_info": json.dumps({"calories": 520, "protein": 38, "carbs": 18, "fat": 32}),
         "servings": 4,
         "is_local": True,
@@ -152,27 +152,23 @@ SAMPLE_RECIPES = [
 ]
 
 def seed_database():
-    from app.services.ingestion_service import load_peruvian_recipes_json
-    
     db: Session = SessionLocal()
     try:
         if USE_SEED:
             existing_count = db.query(Recipe).count()
             if existing_count == 0:
-                recipes_data = load_peruvian_recipes_json()
-                if recipes_data:
-                    for recipe_data in recipes_data:
-                        db.add(Recipe(**recipe_data))
-                    db.commit()
-                    print(f"✅ Seed: {len(recipes_data)} recetas peruanas tradicionales insertadas.")
-                else:
-                    print("⚠️  No se pudieron cargar recetas peruanas del JSON.")
+                for recipe_data in SAMPLE_RECIPES:
+                    db.add(Recipe(**recipe_data))
+                db.commit()
+                print(f"✅ Seed: {len(SAMPLE_RECIPES)} recetas insertadas.")
             else:
                 print(f"⚠️  La base ya tiene {existing_count} recetas. Seed omitido.")
-        
+        else:
+            print("⚠️  Seed omitido (--only activo)")
+
         total = db.query(Recipe).count()
         print(f"\n📊 Total recetas en BD: {total}")
-        
+
     except Exception as e:
         print(f"❌ Error: {e}")
         db.rollback()
