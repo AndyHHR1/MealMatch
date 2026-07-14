@@ -583,20 +583,28 @@
             errorDiv.classList.remove('hidden');
         }
 
-        document.getElementById('ingredientModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeIngredientPanel();
+        document.addEventListener('DOMContentLoaded', function() {
+            const ingredientModalEl = document.getElementById('ingredientModal');
+            if (ingredientModalEl) {
+                ingredientModalEl.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeIngredientPanel();
+                    }
+                });
             }
-        });
 
-        document.getElementById('recipeModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+            const recipeModalEl = document.getElementById('recipeModal');
+            if (recipeModalEl) {
+                recipeModalEl.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeModal();
+                    }
+                });
             }
-        });
 
-        loadSelected();
-        updateSelectedTags();
+            loadSelected();
+            updateSelectedTags();
+        });
     </script>
 
     <div id="recipeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
