@@ -1606,6 +1606,7 @@ class RecipeService:
             "nutritional_info": json.loads(recipe.nutritional_info) if recipe.nutritional_info else {},
             "servings": recipe.servings,
             "source_dataset": recipe.source_dataset,
+            "enrichment": _generate_enrichment(recipe),
         }
 
     def search_recipes(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
@@ -1683,6 +1684,51 @@ class RecipeService:
             if cat not in result:
                 result[cat] = sorted(ings)
         return result
+
+
+def _generate_enrichment(recipe) -> Dict[str, Any]:
+    """Genera notas estilo recetario a partir de los datos de la receta.
+
+    Consejos prácticos derivados de ingredientes, región y tipo de cocción.
+    """
+    tips: List[str] = []
+    try:
+        ingredients = json.loads(recipe.ingredients or "[]")
+    except Exception:
+        ingredients = []
+    text = " ".join(ingredients).lower()
+    region = (recipe.region or "").lower()
+    category = (recipe.tags[0] if isinstance(recipe.tags, list) and recipe.tags else "").lower() if recipe.tags else ""
+
+    tips.append("Emplea ingredientes frescos y de temporada para realzar el sabor del plato.")
+
+    if "costa" in region:
+        tips.append("Plato de la costa peruana: acompáñalo con papa sancochada, camote o arroz.")
+    elif "sierra" in region:
+        tips.append("Típico de la sierra: queda excelente con papas, maíz o queso.")
+    elif "selva" in region:
+        tips.append("De la selva peruana: combina bien con plátano, yuca o chonta.")
+
+    if any(k in text for k in ["limon", "cebolla", "marinar", "vinagre", "vinagreta"]):
+        tips.append("Marina con anticipación para que los sabores se integren mejor.")
+    if any(k in text for k in ["horno", "asado", "hornear", "asar", "parrilla"]):
+        tips.append("Precalienta el horno o la parrilla y controla la temperatura durante la cocción.")
+    if any(k in text for k in ["ají", "aji", "picante", "chile", "chili"]):
+        tips.append("Ajusta la cantidad de ají al nivel de picante que prefieras.")
+    if any(k in text for k in ["caldo", "hervir", "herv", "sancoch"]):
+        tips.append("Deja el caldo a fuego lento para concentrar el sabor.")
+    if any(k in text for k in ["freir", "frito", "aceite"]):
+        tips.append("Drena sobre papel absorbente para retirar el exceso de grasa.")
+    if "postre" in category or "dulce" in category:
+        tips.append("En repostería, respeta las medidas y no te saltes los tiempos de reposo.")
+
+    seen = set()
+    out = []
+    for t in tips:
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+    return {"tips": out[:4]}
 
 
 def _ingredients_match(user_ing: str, recipe_ing: str) -> bool:

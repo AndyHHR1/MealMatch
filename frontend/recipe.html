@@ -68,6 +68,13 @@
                 <ol id="rSteps" class="space-y-4 text-gray-700"></ol>
             </section>
 
+            <section id="rTipsSection" class="hidden border-t pt-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="w-1.5 h-6 bg-primary rounded mr-2"></span>Consejos del chef
+                </h2>
+                <ul id="rTips" class="space-y-2 text-gray-700"></ul>
+            </section>
+
             <section id="rNutritionSection" class="hidden border-t pt-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
                     <span class="w-1.5 h-6 bg-primary rounded mr-2"></span>Información Nutricional (aprox.)
@@ -128,7 +135,7 @@
             }
 
             const ingredients = (r.ingredients || []).map(
-                ing => `<li class="flex items-start"><span class="text-primary mr-2">•</span><span>${ing}</span></li>`
+                ing => `<li class="flex items-center gap-3"><input type="checkbox" class="h-4 w-4 text-primary rounded border-gray-300"><span>${ing}</span></li>`
             ).join('');
             document.getElementById('rIngredients').innerHTML = ingredients || '<li class="text-gray-400">Sin ingredientes.</li>';
 
@@ -146,6 +153,17 @@
                 nutritionSection.classList.remove('hidden');
             } else {
                 nutritionSection.classList.add('hidden');
+            }
+
+            const tipsSection = document.getElementById('rTipsSection');
+            const tips = (r.enrichment && r.enrichment.tips) || [];
+            if (tips.length) {
+                document.getElementById('rTips').innerHTML = tips.map(
+                    t => `<li class="flex items-start"><span class="mr-2">💡</span><span>${t}</span></li>`
+                ).join('');
+                tipsSection.classList.remove('hidden');
+            } else {
+                tipsSection.classList.add('hidden');
             }
         }
 
