@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import json
 import os
 import sys
@@ -7,10 +8,19 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, Base, engine
-from app.models import Recipe
+from app.models import Recipe, DatasetMeta
 
 CSV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "Recetas_Peru_200.csv")
 SOURCE_DATASET = "Recetas_Peru_200"
+SIGNATURE_KEY = "recetas_peru_200_signature"
+
+
+def _csv_signature(path: str) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def _row_to_recipe(row: dict) -> Recipe:
@@ -31,17 +41,26 @@ def _row_to_recipe(row: dict) -> Recipe:
     )
 
 
-def load_database():
+def load_database(force: bool = False):
     if not os.path.exists(CSV_PATH):
         print(f"❌ No se encontró el dataset: {CSV_PATH}")
         return
 
     Base.metadata.create_all(bind=engine)
+    signature = _csv_signature(CSV_PATH)
     db: Session = SessionLocal()
     try:
-        if db.query(Recipe).count() > 0:
-            print("⚠️  La base ya tiene recetas. Carga de Recetas_Peru_200 omitida.")
+        meta = db.query(DatasetMeta).filter(DatasetMeta.key == SIGNATURE_KEY).first()
+        stored_signature = meta.value if meta else None
+        has_recipes = db.query(Recipe).count() > 0
+
+        if not force and stored_signature == signature and has_recipes:
+            print("✅ Recetas_Peru_200 ya está actualizado (sin cambios).")
             return
+
+        # Recarga: vacía la tabla y vuelve a insertar desde el CSV
+        db.query(Recipe).delete()
+        db.commit()
 
         added = 0
         with open(CSV_PATH, newline="", encoding="utf-8") as f:
@@ -52,8 +71,12 @@ def load_database():
                 db.add(_row_to_recipe(row))
                 added += 1
 
+        if meta is None:
+            meta = DatasetMeta(key=SIGNATURE_KEY)
+            db.add(meta)
+        meta.value = signature
         db.commit()
-        print(f"✅ Recetas_Peru_200: {added} recetas insertadas.")
+        print(f"✅ Recetas_Peru_200 recargado: {added} recetas.")
     except Exception as e:
         print(f"❌ Error cargando Recetas_Peru_200: {e}")
         db.rollback()
@@ -63,3 +86,4 @@ def load_database():
 
 if __name__ == "__main__":
     load_database()
+

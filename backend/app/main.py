@@ -17,10 +17,9 @@ async def lifespan(app: FastAPI):
     from app.models import Recipe
     db = SessionLocal()
     try:
-        # Si la base está vacía (p.ej. Postgres nuevo en Render), cargamos el dataset
-        if db.query(Recipe).count() == 0:
-            from load_recetas_peru import load_database
-            load_database()
+        # Carga/recarga automática del dataset según su firma (Recetas_Peru_200)
+        from load_recetas_peru import load_database
+        load_database()
         CATEGORIZED_INGREDIENTS_CACHE = RecipeService(db).get_ingredients_categorized()
     finally:
         db.close()

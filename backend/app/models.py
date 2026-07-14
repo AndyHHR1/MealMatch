@@ -19,3 +19,10 @@ class Recipe(Base):
     nutritional_info = Column(Text)  # JSON string dict
     servings = Column(Integer, default=1)
     source_dataset = Column(String(100))
+
+
+class DatasetMeta(Base):
+    __tablename__ = "dataset_meta"
+
+    key = Column(String(255), primary_key=True)
+    value = Column(Text)
