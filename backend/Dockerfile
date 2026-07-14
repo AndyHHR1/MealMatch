@@ -7,14 +7,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar requirements
-COPY requirements.txt .
+# Copiar requirements (el build context de Render es la raíz del repo)
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar código
-COPY app/ ./app/
-COPY data/Recetas_Peru_200.csv ./data/Recetas_Peru_200.csv
-COPY load_recetas_peru.py ./load_recetas_peru.py
+COPY backend/app/ ./app/
+COPY backend/data/Recetas_Peru_200.csv ./data/Recetas_Peru_200.csv
+COPY backend/load_recetas_peru.py ./load_recetas_peru.py
 
 # Crear directorio para la base de datos
 RUN mkdir -p /app/data
