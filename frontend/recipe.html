@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealMatch Perú - Receta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        secondary: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="index.html" class="flex items-center text-gray-900">
+                    <svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="ml-2 text-xl font-bold">MealMatch Perú</span>
+                </a>
+                <button onclick="window.print()" class="bg-primary hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
+                    Imprimir receta
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <div id="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary"></div>
+            <p class="mt-4 text-gray-500">Cargando la receta...</p>
+        </div>
+
+        <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"></div>
+
+        <article id="content" class="hidden bg-white rounded-lg shadow-md p-6 md:p-8">
+            <h1 id="rTitle" class="text-3xl font-extrabold text-gray-900"></h1>
+
+            <div id="rBadges" class="flex flex-wrap gap-2 mt-3"></div>
+
+            <p id="rDescription" class="text-gray-600 mt-4 leading-relaxed"></p>
+
+            <hr class="my-6">
+
+            <section class="mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="w-1.5 h-6 bg-primary rounded mr-2"></span>Ingredientes
+                </h2>
+                <ul id="rIngredients" class="space-y-2 text-gray-700"></ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="w-1.5 h-6 bg-primary rounded mr-2"></span>Preparación
+                </h2>
+                <ol id="rSteps" class="space-y-4 text-gray-700"></ol>
+            </section>
+
+            <section id="rNutritionSection" class="hidden border-t pt-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="w-1.5 h-6 bg-primary rounded mr-2"></span>Información Nutricional (aprox.)
+                </h2>
+                <div id="rNutrition" class="grid grid-cols-2 gap-2 text-sm"></div>
+            </section>
+        </article>
+    </main>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : 'https://mealmatch-adq6.onrender.com';
+
+        const recipeId = new URLSearchParams(location.search).get('id');
+
+        async function loadRecipe() {
+            if (!recipeId) {
+                showError('No se especificó una receta.');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/recipes/${recipeId}`);
+                if (!response.ok) {
+                    showError('No se pudo cargar la receta.');
+                    return;
+                }
+                const r = await response.json();
+                renderRecipe(r);
+            } catch (error) {
+                showError('Error al cargar la receta. Verifica tu conexión.');
+                console.error(error);
+            }
+        }
+
+        function renderRecipe(r) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+
+            document.title = `${r.name} - MealMatch Perú`;
+            document.getElementById('rTitle').textContent = r.name;
+
+            const badges = [];
+            if (r.region) badges.push(['Región', r.region, 'bg-blue-100 text-blue-800']);
+            if (r.difficulty) badges.push(['Dificultad', r.difficulty, 'bg-gray-100 text-gray-800']);
+            if (r.prep_time_minutes) badges.push(['Tiempo', `${r.prep_time_minutes} min`, 'bg-purple-100 text-purple-800']);
+            if (r.servings) badges.push(['Porciones', `${r.servings}`, 'bg-green-100 text-green-800']);
+            document.getElementById('rBadges').innerHTML = badges.map(
+                b => `<span class="px-3 py-1 rounded-full text-xs font-medium ${b[2]}">${b[1]}</span>`
+            ).join('');
+
+            const descEl = document.getElementById('rDescription');
+            if (r.description) {
+                descEl.textContent = r.description;
+                descEl.classList.remove('hidden');
+            } else {
+                descEl.classList.add('hidden');
+            }
+
+            const ingredients = (r.ingredients || []).map(
+                ing => `<li class="flex items-start"><span class="text-primary mr-2">•</span><span>${ing}</span></li>`
+            ).join('');
+            document.getElementById('rIngredients').innerHTML = ingredients || '<li class="text-gray-400">Sin ingredientes.</li>';
+
+            const steps = (r.steps || []).map(
+                (step, i) => `<li class="flex items-start"><span class="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mr-3">${i + 1}</span><span>${step}</span></li>`
+            ).join('');
+            document.getElementById('rSteps').innerHTML = steps || '<li class="text-gray-400">Sin pasos.</li>';
+
+            const nutritionSection = document.getElementById('rNutritionSection');
+            const nutrition = r.nutritional_info && Object.keys(r.nutritional_info).length > 0 ? r.nutritional_info : null;
+            if (nutrition) {
+                document.getElementById('rNutrition').innerHTML = Object.entries(nutrition).map(
+                    ([key, value]) => `<div class="bg-gray-50 p-2 rounded"><span class="text-gray-500 capitalize">${key}</span>: <span class="font-semibold">${value}</span></div>`
+                ).join('');
+                nutritionSection.classList.remove('hidden');
+            } else {
+                nutritionSection.classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        loadRecipe();
+    </script>
+</body>
+</html>

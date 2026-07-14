@@ -139,6 +139,7 @@
         let categorizedIngredients = {};
         let selectedCategory = null;
         let selectedIngredients = new Set();
+        let currentRecipe = null;
 
         const MIXPANEL_TOKEN = 'YOUR_MIXPANEL_TOKEN';
         if (typeof mixpanel !== 'undefined' && MIXPANEL_TOKEN !== 'YOUR_MIXPANEL_TOKEN') {
@@ -450,12 +451,8 @@
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
                                         ${recipe.region || 'Nacional'}
                                     </span>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                        ${recipe.difficulty}
-                                    </span>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                        ${recipe.prep_time_minutes} min
-                                    </span>
+                                    ${recipe.difficulty ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">${recipe.difficulty}</span>` : ''}
+                                    ${recipe.prep_time_minutes ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">${recipe.prep_time_minutes} min</span>` : ''}
                                 </div>
                             </div>
                             <div class="ml-4 flex-shrink-0">
@@ -515,14 +512,14 @@
                 const searchData = lastSearchResults.find(r => r.id === recipeId);
                 
                 document.getElementById('modalTitle').textContent = recipe.name;
+                currentRecipe = recipe;
                 document.getElementById('modalContent').innerHTML = `
-                    <img src="${recipe.image_url}" alt="${recipe.name}" class="w-full h-48 object-cover rounded-lg mb-4" onerror="this.src='https://placehold.co/600x400?text=Receta'">
-                    
-                    <div class="flex flex-wrap gap-2 mb-4">
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
                         <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${recipe.region || 'Nacional'}</span>
-                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">${recipe.difficulty}</span>
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">${recipe.prep_time_minutes} min</span>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">${recipe.servings} porciones</span>
+                        ${recipe.difficulty ? `<span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">${recipe.difficulty}</span>` : ''}
+                        ${recipe.prep_time_minutes ? `<span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">${recipe.prep_time_minutes} min</span>` : ''}
+                        ${recipe.servings ? `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">${recipe.servings} porciones</span>` : ''}
+                        <button onclick="openCookPage(${recipe.id})" class="ml-auto bg-primary hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg transition text-sm whitespace-nowrap">A cocinar →</button>
                     </div>
 
                     ${recipe.description ? `<p class="text-gray-600 mb-4">${recipe.description}</p>` : ''}
@@ -578,6 +575,10 @@
 
         function closeModal() {
             document.getElementById('recipeModal').classList.add('hidden');
+        }
+
+        function openCookPage(id) {
+            window.open(`recipe.html?id=${id}`, '_blank');
         }
 
         function showError(message) {
