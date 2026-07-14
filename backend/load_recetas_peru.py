@@ -53,8 +53,10 @@ def load_database(force: bool = False):
         meta = db.query(DatasetMeta).filter(DatasetMeta.key == SIGNATURE_KEY).first()
         stored_signature = meta.value if meta else None
         has_recipes = db.query(Recipe).count() > 0
+        # Red de seguridad: si hay datos viejos con ingredientes unidos (" y "), recargar.
+        stale_joined = db.query(Recipe).filter(Recipe.ingredients.like("% y %")).first() is not None
 
-        if not force and stored_signature == signature and has_recipes:
+        if not force and stored_signature == signature and has_recipes and not stale_joined:
             print("✅ Recetas_Peru_200 ya está actualizado (sin cambios).")
             return
 
