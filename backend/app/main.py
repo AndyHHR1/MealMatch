@@ -14,8 +14,13 @@ CATEGORIZED_INGREDIENTS_CACHE: dict[str, list[str]] | None = None
 async def lifespan(app: FastAPI):
     global CATEGORIZED_INGREDIENTS_CACHE
     from app.database import SessionLocal
+    from app.models import Recipe
     db = SessionLocal()
     try:
+        # Si la base está vacía (p.ej. Postgres nuevo en Render), cargamos el dataset
+        if db.query(Recipe).count() == 0:
+            from load_recetas_peru import load_database
+            load_database()
         CATEGORIZED_INGREDIENTS_CACHE = RecipeService(db).get_ingredients_categorized()
     finally:
         db.close()

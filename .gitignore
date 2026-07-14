@@ -19,6 +19,9 @@ backend/data/*.csv
 backend/data/*.zip
 backend/data/*.json
 
+# Dataset oficial de producción (debe ir al repo para el build de Render)
+!backend/data/Recetas_Peru_200.csv
+
 # IDE
 .vscode/
 .idea/
