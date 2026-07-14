@@ -33,6 +33,9 @@
                 <button onclick="openIngredientPanel()" class="bg-primary hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
                     Mis Ingredientes
                 </button>
+                <button onclick="openDishPanel()" class="ml-2 bg-white border border-primary text-primary hover:bg-emerald-50 font-semibold py-2 px-4 rounded-lg transition text-sm">
+                    Buscar plato
+                </button>
             </div>
         </div>
     </nav>
@@ -583,6 +586,58 @@
             errorDiv.classList.remove('hidden');
         }
 
+        let dishSearchTimer = null;
+
+        function openDishPanel() {
+            document.getElementById('dishModal').classList.remove('hidden');
+            const input = document.getElementById('dishSearch');
+            input.value = '';
+            document.getElementById('dishResults').innerHTML = '<p class="text-center text-gray-400 py-8">Empieza a escribir para buscar platos.</p>';
+            input.focus();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDishPanel() {
+            document.getElementById('dishModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function onDishSearchInput() {
+            clearTimeout(dishSearchTimer);
+            dishSearchTimer = setTimeout(searchDishNames, 200);
+        }
+
+        async function searchDishNames() {
+            const query = document.getElementById('dishSearch').value.trim();
+            const resultsDiv = document.getElementById('dishResults');
+            if (!query) {
+                resultsDiv.innerHTML = '<p class="text-center text-gray-400 py-8">Empieza a escribir para buscar platos.</p>';
+                return;
+            }
+            resultsDiv.innerHTML = '<p class="text-center text-gray-400 py-8">Buscando...</p>';
+            try {
+                const response = await fetch(`${API_URL}/recipes/search?q=${encodeURIComponent(query)}&limit=30`);
+                const data = await response.json();
+                const results = data.results || [];
+                if (results.length === 0) {
+                    resultsDiv.innerHTML = '<p class="text-center text-gray-400 py-8">No se encontraron platos.</p>';
+                    return;
+                }
+                resultsDiv.innerHTML = results.map(r => `
+                    <button onclick="selectDish(${r.id}, '${r.name.replace(/'/g, "\\'")}')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-50 transition border border-transparent hover:border-emerald-200">
+                        <span class="text-gray-800 font-medium">${r.name}</span>
+                    </button>
+                `).join('');
+            } catch (error) {
+                resultsDiv.innerHTML = '<p class="text-center text-red-500 py-8">Error al buscar platos.</p>';
+            }
+        }
+
+        function selectDish(id, name) {
+            closeDishPanel();
+            showRecipeDetail(id, name);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const ingredientModalEl = document.getElementById('ingredientModal');
             if (ingredientModalEl) {
@@ -602,10 +657,45 @@
                 });
             }
 
+            const dishModalEl = document.getElementById('dishModal');
+            if (dishModalEl) {
+                dishModalEl.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeDishPanel();
+                    }
+                });
+            }
+
             loadSelected();
             updateSelectedTags();
         });
     </script>
+
+    <div id="dishModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-gray-900">Buscar plato</h3>
+                <button onclick="closeDishPanel()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4">
+                <input
+                    type="text"
+                    id="dishSearch"
+                    placeholder="Escribe el nombre del plato (ej. ceviche, causa)..."
+                    autocomplete="off"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition"
+                    oninput="onDishSearchInput()"
+                >
+            </div>
+            <div id="dishResults" class="flex-1 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+                <p class="text-center text-gray-400 py-8">Empieza a escribir para buscar platos.</p>
+            </div>
+        </div>
+    </div>
 
     <div id="recipeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">

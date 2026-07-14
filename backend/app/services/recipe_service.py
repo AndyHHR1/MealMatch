@@ -1634,6 +1634,19 @@ class RecipeService:
 
         return results[:limit]
 
+    def search_recipe_names(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
+        q = _normalize(query)
+        if not q:
+            return []
+        recipes = self.db.query(Recipe).all()
+        matches = []
+        for recipe in recipes:
+            name_norm = _normalize(recipe.name or "")
+            if q in name_norm:
+                matches.append((not name_norm.startswith(q), len(recipe.name or ""), recipe.id, recipe.name))
+        matches.sort(key=lambda x: (x[0], x[1], x[3]))
+        return [{"id": m[2], "name": m[3]} for m in matches[:limit]]
+
     def get_all_unique_ingredients(self) -> List[str]:
         recipes = self.db.query(Recipe).all()
         all_ings = set()

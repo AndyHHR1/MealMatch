@@ -19,6 +19,17 @@ def get_ingredients_categorized():
         return {"categories": {}}
     return {"categories": CATEGORIZED_INGREDIENTS_CACHE}
 
+@router.get("/search")
+def search_recipe_names(
+    q: str = Query(default="", description="Texto a buscar en el nombre del plato"),
+    limit: int = Query(default=20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    service = RecipeService(db)
+    results = service.search_recipe_names(q, limit=limit)
+    return {"results": results, "count": len(results)}
+
+
 @router.get("/search/{query}")
 def search_recipes(
     query: str,
