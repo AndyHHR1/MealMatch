@@ -19,6 +19,8 @@ class Recipe(Base):
     nutritional_info = Column(Text)  # JSON string dict
     servings = Column(Integer, default=1)
     source_dataset = Column(String(100))
+    ingredientes_detallados = Column(Text)  # JSON string list (con cantidades)
+    preparacion_detallada = Column(Text)  # JSON string list (pasos ampliados)
 
 
 class DatasetMeta(Base):

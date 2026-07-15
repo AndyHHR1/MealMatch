@@ -134,12 +134,14 @@
                 descEl.classList.add('hidden');
             }
 
-            const ingredients = (r.ingredients || []).map(
+            const ingredientes = (r.ingredientes_detallados && r.ingredientes_detallados.length) ? r.ingredientes_detallados : (r.ingredients || []);
+            const ingredients = ingredientes.map(
                 ing => `<li class="flex items-center gap-3"><input type="checkbox" class="h-4 w-4 text-primary rounded border-gray-300"><span>${ing}</span></li>`
             ).join('');
             document.getElementById('rIngredients').innerHTML = ingredients || '<li class="text-gray-400">Sin ingredientes.</li>';
 
-            const steps = (r.steps || []).map(
+            const pasos = (r.preparacion_detallada && r.preparacion_detallada.length) ? r.preparacion_detallada : (r.steps || []);
+            const steps = pasos.map(
                 (step, i) => `<li class="flex items-start"><span class="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mr-3">${i + 1}</span><span>${step}</span></li>`
             ).join('');
             document.getElementById('rSteps').innerHTML = steps || '<li class="text-gray-400">Sin pasos.</li>';

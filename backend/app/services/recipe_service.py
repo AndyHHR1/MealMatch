@@ -1606,6 +1606,8 @@ class RecipeService:
             "nutritional_info": json.loads(recipe.nutritional_info) if recipe.nutritional_info else {},
             "servings": recipe.servings,
             "source_dataset": recipe.source_dataset,
+            "ingredientes_detallados": json.loads(recipe.ingredientes_detallados) if recipe.ingredientes_detallados else [],
+            "preparacion_detallada": json.loads(recipe.preparacion_detallada) if recipe.preparacion_detallada else [],
             "enrichment": _generate_enrichment(recipe),
         }
 

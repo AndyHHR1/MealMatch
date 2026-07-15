@@ -38,6 +38,8 @@ def _row_to_recipe(row: dict) -> Recipe:
         nutritional_info=None,
         servings=None,
         source_dataset=SOURCE_DATASET,
+        ingredientes_detallados=(row.get("ingredientes_con_cantidades") or None),
+        preparacion_detallada=(row.get("preparacion_detallada") or None),
     )
 
 
