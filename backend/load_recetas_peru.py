@@ -17,15 +17,18 @@ SIGNATURE_KEY = "recetas_peru_200_signature"
 
 
 def _ensure_new_columns():
-    with engine.begin() as conn:
-        cols = {
-            "ingredientes_detallados": "TEXT",
-            "preparacion_detallada": "TEXT",
-        }
-        existing = {row[1] for row in conn.execute(text("SELECT column_name FROM information_schema.columns WHERE table_name='recipes'"))}
-        for col, coltype in cols.items():
-            if col not in existing:
-                conn.execute(text(f"ALTER TABLE recipes ADD COLUMN {col} {coltype}"))
+    try:
+        with engine.begin() as conn:
+            cols = {
+                "ingredientes_detallados": "TEXT",
+                "preparacion_detallada": "TEXT",
+            }
+            existing = {row[0] for row in conn.execute(text("SELECT column_name FROM information_schema.columns WHERE table_name='recipes'"))}
+            for col, coltype in cols.items():
+                if col not in existing:
+                    conn.execute(text(f"ALTER TABLE recipes ADD COLUMN {col} {coltype}"))
+    except Exception:
+        pass
 
 
 def _csv_signature(path: str) -> str:
