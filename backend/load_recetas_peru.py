@@ -6,6 +6,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, Base, engine
 from app.models import Recipe, DatasetMeta
@@ -13,6 +14,18 @@ from app.models import Recipe, DatasetMeta
 CSV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "Recetas_Peru_200.csv")
 SOURCE_DATASET = "Recetas_Peru_200"
 SIGNATURE_KEY = "recetas_peru_200_signature"
+
+
+def _ensure_new_columns():
+    with engine.begin() as conn:
+        cols = {
+            "ingredientes_detallados": "TEXT",
+            "preparacion_detallada": "TEXT",
+        }
+        existing = {row[1] for row in conn.execute(text("SELECT column_name FROM information_schema.columns WHERE table_name='recipes'"))}
+        for col, coltype in cols.items():
+            if col not in existing:
+                conn.execute(text(f"ALTER TABLE recipes ADD COLUMN {col} {coltype}"))
 
 
 def _csv_signature(path: str) -> str:
@@ -49,6 +62,7 @@ def load_database(force: bool = False):
         return
 
     Base.metadata.create_all(bind=engine)
+    _ensure_new_columns()
     signature = _csv_signature(CSV_PATH)
     db: Session = SessionLocal()
     try:
