@@ -27,46 +27,36 @@ MealMatch/
 │   │   └── services/
 │   │       └── recipe_service.py      # Lógica de matching
 │   ├── data/
-│   │   └── 1_Recipe_csv.csv           # Archive dataset (recetas peruanas)
-│   ├── load_archive.py                # Carga de recetas desde CSV
+│   │   └── Recetas_Peru_200.csv       # Dataset oficial (producción)
+│   ├── load_recetas_peru.py           # Carga dataset Recetas_Peru_200
+│   ├── load_archive.py                # Carga archive dataset (histórico)
 │   ├── seed.py                        # Recetas de ejemplo
 │   └── Dockerfile
 ├── frontend/
-│   └── index.html                     # Interfaz de usuario
+│   ├── index.html                     # Interfaz principal
+│   └── recipe.html                    # Vista detallada "A cocinar"
 ├── docker-compose.yml
 └── README.md
 ```
 
-## Instalación y Ejecución
+## Datos
 
-### Desarrollo Local
+El dataset oficial de producción es **`Recetas_Peru_200.csv`** (200 recetas peruanas), ubicado en `backend/data/`.
 
-**Backend:**
-```bash
-cd backend
-./venv/bin/uvicorn app.main:app --reload --port 8000
-```
+Columnas base: `recipe_title, category, subcategory, description, ingredients, directions, num_ingredients, num_steps`.
+Columnas detalladas (solo usadas en **"A cocinar"**): `ingredientes_con_cantidades, preparacion_detallada`.
+`ingredients` y `directions` vienen como arreglos JSON en texto. Las columnas detalladas también vienen como JSON.
 
-**Frontend:**
-```bash
-cd frontend
-python3 -m http.server 3000
-```
+- **Carga automática:** al arrancar el backend, si la base está vacía se inserta el dataset completo (`load_recetas_peru.py`). No requiere paso manual en Render.
+- **Recarga automática:** al actualizar el CSV y hacer deploy, el backend detecta el cambio por firma SHA-256 y recarga las 200 recetas.
+- **Carga manual** (desde `backend/`):
+  ```bash
+  python3 load_recetas_peru.py
+  ```
 
-Abrir http://localhost:3000
-
-### Producción (Docker)
-
-```bash
-docker-compose up --build
-```
-
-La app estará disponible en http://localhost:3000
-
-**Cargar recetas:**
-```bash
-docker exec mealmatch-backend-1 python3 /app/load_archive.py
-```
+Otras fuentes históricas (no usadas en producción):
+1. **Archive Dataset (Kaggle)** - 62,126 recetas, filtrado por términos peruanos (`load_archive.py`)
+2. **Extended Recipes Dataset (Kaggle)** - Dataset extendido
 
 ## Endpoints
 
@@ -79,32 +69,20 @@ docker exec mealmatch-backend-1 python3 /app/load_archive.py
     "limit": 10
   }
   ```
-- `GET /recipes/search/{query}` - Buscar recetas por texto
-- `GET /recipes/{id}` - Detalle de receta
+- `GET /recipes/search?q=` - Buscar platos por nombre (ignora mayúsculas y tildes)
+- `GET /recipes/ingredients/categorized` - Ingredientes únicos por categoría
+- `GET /recipes/{id}` - Detalle de receta (incluye datos detallados para "A cocinar")
 
-## Datos
+## Frontend
 
-El dataset oficial de producción es **`Recetas_Peru_200.csv`** (200 recetas peruanas), ubicado en `backend/data/`.
-
-Columnas: `recipe_title, category, subcategory, description, ingredients, directions, num_ingredients, num_steps`.
-`ingredients` y `directions` vienen como arreglos JSON en texto.
-
-- **Carga automática:** al arrancar el backend, si la base está vacía se inserta el dataset completo (`load_recetas_peru.py`). No requiere paso manual en Render.
-- **Carga manual** (desde `backend/`):
-  ```bash
-  python3 load_recetas_peru.py
-  ```
-
-Otras fuentes históricas (no usadas en producción):
-1. **Archive Dataset (Kaggle)** - 62,126 recetas, filtrado por términos peruanos (`load_archive.py`)
-2. **Extended Recipes Dataset (Kaggle)** - Dataset extendido
-
+- **index.html**: búsqueda por ingredientes, panel "Mis Ingredientes", buscador de platos, tarjetas de resultados.
+- **recipe.html**: vista detallada **"A cocinar"** (se abre en otra pestaña). Muestra ingredientes con cantidades (`ingredientes_con_cantidades`), preparación detallada (`preparacion_detallada`), consejos del chef e info nutricional. Incluye checklist de ingredientes y botón de impresión.
 
 ## Tracking
 
 Evento `recipe_steps_viewed` se dispara cuando:
 - Usuario ingresa ≥ 3 ingredientes
-- Hace clic en "Ver preparación"
+- Abre la página **"A cocinar"** de una receta
 
 Props: `user_id`, `ingredient_count`, `recipe_matched`, `time_to_match`
 
